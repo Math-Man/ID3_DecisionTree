@@ -1,0 +1,6 @@
+c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\bin\Debug\Assignment1_MachineLearning.exe.config
+c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\bin\Debug\Assignment1_MachineLearning.exe
+c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\bin\Debug\Assignment1_MachineLearning.pdb
+c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\obj\Debug\Assignment1_MachineLearning.csprojResolveAssemblyReference.cache
+c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\obj\Debug\Assignment1_MachineLearning.exe
+c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\obj\Debug\Assignment1_MachineLearning.pdb
