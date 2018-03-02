@@ -28,6 +28,12 @@ namespace Assignment1_MachineLearning
 
             Console.WriteLine(CountAttributeValueOccurance(data, "high", "humidity"));
 
+            //Console.WriteLine(DecisionTree.CalculateEntropy(9,5));
+
+            Console.WriteLine(DecisionTree.CalculateEntropy(CountSuccesesByAttributeValue(data, "sunny", "outlook"), CountFailuresByAttributeValue(data, "sunny", "outlook")));
+
+            Console.WriteLine("Gain of outlook: " + DecisionTree.CalculateGain(data, "outlook"));
+
             Console.ReadKey();
         }
 
@@ -80,7 +86,7 @@ namespace Assignment1_MachineLearning
 
             foreach (TreeData data in dataList)
             {
-                TreeAttribute attribute =  data.GetValuebyType(attributeType);
+                TreeAttribute attribute =  data.GetAttributeByType(attributeType);
                 ValuesList.Add(attribute.Attribute_Value);
             }
 
@@ -95,34 +101,53 @@ namespace Assignment1_MachineLearning
         /// <param name="attributeValue"></param>
         /// <param name="attributeType"></param>
         /// <returns>The number of occurances of the given</returns>
-        public static int CountAttributeValueOccurance(List<TreeData> dataList, string attributeValue, string attributeType)
+        public static double CountAttributeValueOccurance(List<TreeData> dataList, string attributeValue, string attributeType)
         {
             List<string> ValuesList = new List<string>();
 
             foreach (TreeData data in dataList)
             {
-                TreeAttribute attribute = data.GetValuebyType(attributeType);
+                TreeAttribute attribute = data.GetAttributeByType(attributeType);
                 ValuesList.Add(attribute.Attribute_Value);
             }
             int count = ((from temp in ValuesList where temp.Equals(attributeValue) select temp).Count());
             return count;
         }
 
+        //TODO: Move the next two methods into a class, make them non-static
 
-        public static int CountFailuresByAttributeValue(List<TreeData> dataList, string attributeValue, string attributeType)
+        public static double CountFailuresByAttributeValue(List<TreeData> dataList, string attributeValue, string attributeType)
         {
+            double count = 0;
             foreach (TreeData data in dataList)
             {
-                TreeAttribute attribute = data.GetValuebyType(attributeType);
-                //Basarlili mi basariz mi?
+                TreeAttribute attribute = data.GetAttributeByType(attributeType);   //Get attribute from the given data
+                if (attribute.Attribute_Value.Equals(attributeValue))   //Is the attribute's value equals to the value we are counting?
+                {
+                    if (!data.isSuccesful)  //if this data failed with the given attribute value, increment count
+                    {
+                        count++;
+                    }
+                }
             }
-            return -1;
+            return count;
         }
 
-        public static int CountSuccesesByAttributeValue(List<TreeData> dataList, string attributeValue)
+        public static double CountSuccesesByAttributeValue(List<TreeData> dataList, string attributeValue, string attributeType)
         {
-
-            return -1;
+            double count = 0;
+            foreach (TreeData data in dataList)
+            {
+                TreeAttribute attribute = data.GetAttributeByType(attributeType);   //Get attribute from the given data
+                if (attribute.Attribute_Value.Equals(attributeValue))   //Is the attribute's value equals to the value we are counting?
+                {
+                    if (data.isSuccesful)  //if this data failed with the given attribute value, increment count
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
         }
 
 

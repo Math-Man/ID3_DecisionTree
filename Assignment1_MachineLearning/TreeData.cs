@@ -18,8 +18,8 @@ namespace Assignment1_MachineLearning
             AttributesList = attributes;
 
             //Determine if this data is succesful
-            if (GetValuebyType(outcomeAttributeType).Equals(SuccessKeyWord)) { isSuccesful = true; }
-            else if (GetValuebyType(outcomeAttributeType).Equals(FailureKeyWord)) { isSuccesful = false; }
+            if (GetAttributeByType(outcomeAttributeType).Attribute_Value.Equals(SuccessKeyWord)) { isSuccesful = true; }
+            else if (GetAttributeByType(outcomeAttributeType).Attribute_Value.Equals(FailureKeyWord)) { isSuccesful = false; }
             else { Console.ForegroundColor = ConsoleColor.Red;  Console.WriteLine("Somethings broken"); Console.ForegroundColor = ConsoleColor.White; }//Its broken Error message
         }
 
@@ -28,7 +28,7 @@ namespace Assignment1_MachineLearning
         /// </summary>
         /// <param name="Attribute_Type"></param>
         /// <returns>Attribute with given Attribute Type</returns>
-        public TreeAttribute GetValuebyType(string Attribute_Type)
+        public TreeAttribute GetAttributeByType(string Attribute_Type)
         {
             foreach (TreeAttribute att in AttributesList)
             {

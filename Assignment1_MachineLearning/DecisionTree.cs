@@ -38,7 +38,7 @@ namespace Assignment1_MachineLearning
         {
             foreach (TreeData data in Examples)
             {
-                TreeAttribute attribute = data.GetValuebyType(TargetAttribute_Type);
+                TreeAttribute attribute = data.GetAttributeByType(TargetAttribute_Type);
                 if (attribute.Attribute_Type.Equals(TargetAttribute_Type))
                 {
                     if (attribute.Attribute_Value.Equals("loose") || attribute.Attribute_Value.Equals("no")) { return false; }   //TODO: FIX THIS. Find a way to realize outputs as true/false (Get outputType values?)
@@ -51,7 +51,7 @@ namespace Assignment1_MachineLearning
         {
             foreach (TreeData data in Examples)
             {
-                TreeAttribute attribute = data.GetValuebyType(TargetAttribute_Type);
+                TreeAttribute attribute = data.GetAttributeByType(TargetAttribute_Type);
                 if (attribute.Attribute_Type.Equals(TargetAttribute_Type))
                 {
                     if (attribute.Attribute_Value.Equals("win") || attribute.Attribute_Value.Equals("yes")) { return false; }   //TODO: FIX THIS. Find a way to realize outputs as true/false (Get outputType values?)
@@ -61,27 +61,64 @@ namespace Assignment1_MachineLearning
         }
 
 
-
-        public static double CalculateEntropy(int positive, int negative)
+        /// <summary>
+        /// Calculates Entrophy of a given system. Takes in positive outcome count and negative outcome count as parameters.
+        /// </summary>
+        /// <param name="positive"></param>
+        /// <param name="negative"></param>
+        /// <returns>Entrophy between 0 and 1</returns>
+        public static double CalculateEntropy(double positive, double negative)
         {
-            return ((positive / (positive + negative)) * Math.Log((positive / (positive + negative)), 2) - (negative / (positive + negative)) * Math.Log((negative / (positive + negative))));
+            double total = positive + negative;
+
+            double valueA = -1 * (positive / total) * Math.Log(positive / total, 2);
+            double valueB = -1 * (negative / total) * Math.Log(negative / total, 2);
+
+
+            //Error Check
+            if (double.IsNaN(valueA + valueB)) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Detected Nan value (infinite return from log) when calculating entropy. Possibly no failures for given value, returning 0" ); Console.ForegroundColor = ConsoleColor.Gray; return 0.0; }
+
+
+
+            return valueA + valueB;
         }
 
         public static double CalculateGain(List<TreeData> dataList, string AttributeType)
         {
             List<string> PossibleValues = Program.GetPossibleAttributeValues(dataList, AttributeType);
 
-            double Gains = CalculateEntropy(1,1);   //TODO: Number of positive and negative occurance calculation
+            //TODO: Export into methods
+            double DataSetSuccessCount = 0;
+            double DataSetFailureCount = 0;
+
+            foreach (TreeData data in dataList)
+            {
+                if (data.isSuccesful) { DataSetSuccessCount++; }
+                else { DataSetFailureCount++; }
+            }
+
+            double Gains = CalculateEntropy(DataSetSuccessCount, DataSetFailureCount);   //TODO: Number of positive and negative occurance calculation
 
             foreach (string possibleValue in PossibleValues)
             {
-                int occurances = Program.CountAttributeValueOccurance(dataList, possibleValue, AttributeType);
+                double occurances = Program.CountAttributeValueOccurance(dataList, possibleValue, AttributeType);
 
-                Gains -= (occurances / dataList.Count) * CalculateEntropy(1,1); //Success count of any attribute type, failure count of any attribute type
+                //Substract the (number of times this value occured / all data count) * (entropy of the current value of the given type (Wind: Weak, Strong, Mild...))
+                double GainForPossibleValue = (occurances / dataList.Count) * CalculateEntropy(Program.CountSuccesesByAttributeValue(dataList, possibleValue, AttributeType), Program.CountFailuresByAttributeValue(dataList, possibleValue, AttributeType));
+
+
+                Gains -= GainForPossibleValue;
+
+                Console.WriteLine("Entropy Coefficent for: " + possibleValue + " " + AttributeType + " " + GainForPossibleValue);
+
+                
+                
             }
 
             return Gains;
         }
+
+        
 
     }
 }
