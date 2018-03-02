@@ -37,6 +37,14 @@ namespace Assignment1_MachineLearning
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Extracts data from the given file.
+        /// </summary>
+        /// <param name="FileName">Path of the file</param>
+        /// <param name="outcomeTypeStringName">Outcome type of this dataset (example: playtennis)</param>
+        /// <param name="succesfullOutcomeName">Outcome type's value upon succesful result (yes, win etc.)</param>
+        /// <param name="failedOutcomeName">Outcome type's value upon failed result (no, loose)</param>
+        /// <returns></returns>
         public static List<TreeData> ExtractData(string FileName, string outcomeTypeStringName, string succesfullOutcomeName, string failedOutcomeName)
         {
             List<TreeData> output = new List<TreeData>();
@@ -150,6 +158,27 @@ namespace Assignment1_MachineLearning
             return count;
         }
 
+
+        /// <summary>
+        /// Gets the data with given value of the given attribute type
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="attributeValue"></param>
+        /// <param name="attributeType"></param>
+        /// <returns>A list of the data with given credentials</returns>
+        public static List<TreeData> GetAttributeValueOccurances(List<TreeData> dataList, string attributeValue, string attributeType)
+        {
+            List<TreeData> FilteredDataList = new List<TreeData>();
+
+            foreach (TreeData data in dataList)
+            {
+                if (data.GetAttributeByType(attributeType).Attribute_Value.Equals(attributeValue))
+                {
+                    FilteredDataList.Add(data);
+                }
+            }
+            return FilteredDataList;
+        }
 
     }
 }

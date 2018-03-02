@@ -74,11 +74,8 @@ namespace Assignment1_MachineLearning
             double valueA = -1 * (positive / total) * Math.Log(positive / total, 2);
             double valueB = -1 * (negative / total) * Math.Log(negative / total, 2);
 
-
             //Error Check
             if (double.IsNaN(valueA + valueB)) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Detected Nan value (infinite return from log) when calculating entropy. Possibly no failures for given value, returning 0" ); Console.ForegroundColor = ConsoleColor.Gray; return 0.0; }
-
-
 
             return valueA + valueB;
         }
@@ -105,14 +102,10 @@ namespace Assignment1_MachineLearning
 
                 //Substract the (number of times this value occured / all data count) * (entropy of the current value of the given type (Wind: Weak, Strong, Mild...))
                 double GainForPossibleValue = (occurances / dataList.Count) * CalculateEntropy(Program.CountSuccesesByAttributeValue(dataList, possibleValue, AttributeType), Program.CountFailuresByAttributeValue(dataList, possibleValue, AttributeType));
-
-
                 Gains -= GainForPossibleValue;
 
                 Console.WriteLine("Entropy Coefficent for: " + possibleValue + " " + AttributeType + " " + GainForPossibleValue);
 
-                
-                
             }
 
             return Gains;
