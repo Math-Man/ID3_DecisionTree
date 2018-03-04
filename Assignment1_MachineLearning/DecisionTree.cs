@@ -16,7 +16,15 @@ namespace Assignment1_MachineLearning
             drawer = new TreeDrawer();
         }
 
-        public static TreeNode ID3Alt(List<TreeData> Examples, string TargetAttribute_Type, List<string> Attribute_Types)
+        /// <summary>
+        /// Recursive ID3 Algorithm
+        /// </summary>
+        /// <param name="Examples"></param>
+        /// <param name="TargetAttribute_Type"></param>
+        /// <param name="Attribute_Types"></param>
+        /// <param name="ExtraLogging"></param>
+        /// <returns></returns>
+        public static TreeNode ID3Alt(List<TreeData> Examples, string TargetAttribute_Type, List<string> Attribute_Types, bool ExtraLogging)
         {
             TreeNode Root = new TreeNode("Unlabeled");
             
@@ -29,6 +37,7 @@ namespace Assignment1_MachineLearning
                 Root.isLeaf = true;
                 drawer.AddNode(Root);
                 drawer.GoUp();
+                if (ExtraLogging) Console.WriteLine("\nTree Finalized for Type: " + Examples[0].AttributesList[0].Attribute_Type + " With general value of: " + Examples[0].AttributesList[0].Attribute_Value + " With outcome of: " + typestring);
                 return Root;
             }
 
@@ -44,6 +53,7 @@ namespace Assignment1_MachineLearning
                 Console.WriteLine(" Outcome : " + most);
                 drawer.AddNode(Root);
                 drawer.GoUp();
+                if (ExtraLogging) Console.WriteLine("\nTree Finalized for: " + typestring);
                 return Root;
             }
             //Begin
@@ -55,13 +65,17 @@ namespace Assignment1_MachineLearning
             foreach (string AttributeType in Attribute_Types)
             {
                 double calculatedGain = CalculateGain(Examples, AttributeType, TargetAttribute_Type);     //Finds the gain for the given attribute type in examples
+                if (ExtraLogging) Console.WriteLine("\nInformation Gain : " + calculatedGain + " from attribute: " + AttributeType);
                 if (calculatedGain > bestGain)
                 {
                     bestGain = calculatedGain;
                     attributeType_WithBestGain = AttributeType;
+                    
                 }
             }
+            if (ExtraLogging) Console.WriteLine("Selected Attribute : '" + attributeType_WithBestGain + "' with information gain of :" + bestGain);
             Root.label = attributeType_WithBestGain;
+            Root.StaticGain = bestGain;
             drawer.AddNode(Root);
             Root.Decision_AttributeType = attributeType_WithBestGain;
 
@@ -71,6 +85,7 @@ namespace Assignment1_MachineLearning
             List<string> PossibleValues = Program.GetPossibleAttributeValues(Examples, attributeType_WithBestGain);
             foreach (string vi in PossibleValues)
             {
+                
                 //Create a new Branch below Root, corresponding to the test attributeType_WithBestGain = vi
                 TreeBranch branch = new TreeBranch(vi);
 
@@ -87,21 +102,20 @@ namespace Assignment1_MachineLearning
 
                     Root.Branches.Add(branch);
                     drawer.handleBranches(Root);
-                    //TODO: This is broken
-
                 }
                 //Else below this new branch add the subtree
                 else
                 {
-                    
                     Console.Write(attributeType_WithBestGain + "= " + vi + "->");
-                    //Console.WriteLine("End Point, removing: " + attributeType_WithBestGain);
+
+                    if(ExtraLogging) Console.WriteLine("\nRemoving current Attribute for next subtree: " + attributeType_WithBestGain);
 
                     List<string> Attribute_TypesCopy = new List<string>(Attribute_Types);
                     Attribute_TypesCopy.Remove(attributeType_WithBestGain);  //Remove A(attribute with best gain ) from the list
 
+                    if (ExtraLogging) Console.WriteLine("\nStarting new Sub-tree with rule: " + attributeType_WithBestGain + " = "+ vi);
                     drawer.GoDown();
-                    TreeNode subtree = ID3Alt(Examplesvi, TargetAttribute_Type, Attribute_TypesCopy);
+                    TreeNode subtree = ID3Alt(Examplesvi, TargetAttribute_Type, Attribute_TypesCopy, ExtraLogging);
 
                     branch.ConnectionNode = subtree;
                     Root.Branches.Add(branch);
@@ -109,7 +123,9 @@ namespace Assignment1_MachineLearning
                 }
             }
             drawer.GoUp();
+            drawer.Save();
             return Root;
+            
         }
 
         private static bool checkForAllSameOutcome(List<TreeData> Examples, string TargetAttribute_Type, out string outcome)

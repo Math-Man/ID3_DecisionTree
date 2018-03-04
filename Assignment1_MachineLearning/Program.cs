@@ -13,47 +13,53 @@ namespace Assignment1_MachineLearning
     {
         static void Main(string[] args)
         {
-            //TODO: Take data from console about outcomes and success/fail keywords
-            List<TreeData> data;
-            List<string> possibleTypes;
-
-            string outcomeType = "Game";
-            string outcomeSuccessValue = "win";
-
-
-
-
-            data = ExtractData(
-                @"c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\Datasets\dataset3.txt",
-                outcomeType,
-                outcomeSuccessValue,
-                out possibleTypes);
-
-            possibleTypes.Remove(outcomeType);
-            /*
-            Console.WriteLine(data[0].AttributesList[0].Attribute_Type + " " + data[0].AttributesList[0].Attribute_Value);
-
-            List<string> distinctList =  GetPossibleAttributeValues(data, "outlook");
-
-            Console.WriteLine("!"+distinctList.Count);
-
-            Console.WriteLine(CountAttributeValueOccurance(data, "high", "humidity"));
-
-            //Console.WriteLine(DecisionTree.CalculateEntropy(9,5));
-
-            Console.WriteLine(DecisionTree.CalculateEntropy(CountSuccesesByAttributeValue(data, "sunny", "outlook"), CountFailuresByAttributeValue(data, "sunny", "outlook")));
-
-            Console.WriteLine("Gain of outlook: " + DecisionTree.CalculateGain(data, "outlook"));
-            */
-
-            DecisionTree Tree = new DecisionTree();
-            Console.WriteLine("BRACE YOURSELVES");
-            DecisionTree.ID3Alt(data, outcomeType, possibleTypes);
-
-            
-
-
+            Start();
             Console.ReadKey();
+        }
+
+
+        public static void Start()
+        {
+            Console.WriteLine("Program will scan root directory of this application for .txt files...\n");
+            while (true)
+            {
+                List<string> options = new List<string>();
+                int counter = 0;
+                Console.WriteLine("Enter index of one of the following text files as the dataset: ");
+                foreach (string file in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.txt"))
+                {
+                    string[] split = file.Split('\\');
+                    Console.WriteLine(counter + ") " + split[split.Length-1]);
+                    counter++;
+                    options.Add(split[split.Length - 1]);
+                }
+
+                int decisionIndex = Int32.Parse(Console.ReadLine());
+                while (decisionIndex > options.Count - 1 || decisionIndex < 0) { decisionIndex = Int32.Parse(Console.ReadLine()); }
+
+                Console.WriteLine("Enter name of the outcome (playtennis, Game etc..)");
+                string outcomeType = Console.ReadLine();
+
+                Console.WriteLine("Enter the value of outcome success value (yes, win etc...)");
+                string outcomeSuccessValue = Console.ReadLine();
+
+                List<TreeData> data;
+                List<string> possibleTypes;
+
+                data = ExtractData(
+                    options[decisionIndex],
+                    outcomeType,
+                    outcomeSuccessValue,
+                    out possibleTypes);
+
+                possibleTypes.Remove(outcomeType);
+
+                DecisionTree Tree = new DecisionTree();
+                Console.WriteLine("----------------------------------------");
+                DecisionTree.ID3Alt(data, outcomeType, possibleTypes, false);
+                Console.WriteLine("----------------------------------------");
+                Console.WriteLine("Completed!, Outcome Chart is saved at root as 'out.txt'\n");
+            }
         }
 
         /// <summary>

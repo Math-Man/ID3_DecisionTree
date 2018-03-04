@@ -15,6 +15,7 @@ namespace Assignment1_MachineLearning
         public string Decision_AttributeType { get; set; }
         public List<TreeBranch> Branches { get; set; }
         public bool isLeaf { get; set; }
+        public double StaticGain { get; set; }
 
         public TreeNode(string label)
         {
