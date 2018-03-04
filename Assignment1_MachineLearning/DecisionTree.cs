@@ -9,57 +9,128 @@ namespace Assignment1_MachineLearning
     class DecisionTree
     {
 
-        public DecisionTree ID3(List<TreeData> Examples, string TargetAttribute_Type, List<string> Attribute_Types)
+        public static TreeDrawer drawer { get; set; }
+
+        public DecisionTree()
         {
-            TreeNode Root = new TreeNode();
+            drawer = new TreeDrawer();
+        }
 
-            //If all Examples are positive
-            if (checkForAllPositive(Examples, TargetAttribute_Type))
+        public static TreeNode ID3Alt(List<TreeData> Examples, string TargetAttribute_Type, List<string> Attribute_Types)
+        {
+            TreeNode Root = new TreeNode("Unlabeled");
+            
+            string typestring;
+            if (checkForAllSameOutcome(Examples, TargetAttribute_Type, out typestring))
             {
-                Root.label = "+";
+                Console.WriteLine(" Outcome : " + typestring);
+                Root.label = typestring;
+                Root.Decision_AttributeType = TargetAttribute_Type;
+                Root.isLeaf = true;
+                drawer.AddNode(Root);
+                drawer.GoUp();
+                return Root;
             }
 
-            //If all Examples are negative
-            if (checkForAllNegative(Examples, TargetAttribute_Type))
-            {
-                Root.label = "=";
-            }
-            //If attributes is empty
             if (Attribute_Types.Count == 0)
             {
-                Root.label = "=";
+                List<string> possible_TargetAttribute_Types = Program.GetPossibleAttributeValues(Examples, TargetAttribute_Type);
+
+                //taken from: https://stackoverflow.com/questions/355945/find-the-most-occurring-number-in-a-listint
+                var most = possible_TargetAttribute_Types.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
+                Root.isLeaf = true;
+                Root.Decision_AttributeType = TargetAttribute_Type;
+                Root.label = most;
+                Console.WriteLine(" Outcome : " + most);
+                drawer.AddNode(Root);
+                drawer.GoUp();
+                return Root;
             }
+            //Begin
 
+            //Find the  Attribute with the best gain
+            string attributeType_WithBestGain = "";
+            double bestGain = -1;
 
-            return null;
-        }
-
-        private bool checkForAllPositive(List<TreeData> Examples, string TargetAttribute_Type)
-        {
-            foreach (TreeData data in Examples)
+            foreach (string AttributeType in Attribute_Types)
             {
-                TreeAttribute attribute = data.GetAttributeByType(TargetAttribute_Type);
-                if (attribute.Attribute_Type.Equals(TargetAttribute_Type))
+                double calculatedGain = CalculateGain(Examples, AttributeType, TargetAttribute_Type);     //Finds the gain for the given attribute type in examples
+                if (calculatedGain > bestGain)
                 {
-                    if (attribute.Attribute_Value.Equals("loose") || attribute.Attribute_Value.Equals("no")) { return false; }   //TODO: FIX THIS. Find a way to realize outputs as true/false (Get outputType values?)
+                    bestGain = calculatedGain;
+                    attributeType_WithBestGain = AttributeType;
                 }
             }
+            Root.label = attributeType_WithBestGain;
+            drawer.AddNode(Root);
+            Root.Decision_AttributeType = attributeType_WithBestGain;
 
-            return true;
-        }
-        private bool checkForAllNegative(List<TreeData> Examples, string TargetAttribute_Type)
-        {
-            foreach (TreeData data in Examples)
+            
+
+            //For each possible value vi of attributeType_WithBestGain
+            List<string> PossibleValues = Program.GetPossibleAttributeValues(Examples, attributeType_WithBestGain);
+            foreach (string vi in PossibleValues)
             {
-                TreeAttribute attribute = data.GetAttributeByType(TargetAttribute_Type);
-                if (attribute.Attribute_Type.Equals(TargetAttribute_Type))
+                //Create a new Branch below Root, corresponding to the test attributeType_WithBestGain = vi
+                TreeBranch branch = new TreeBranch(vi);
+
+                //Let Examplesvi be the subset of examples that have value vi for attributeType_WithBestGain
+                List<TreeData> Examplesvi = Program.GetAttributeValueOccurances(Examples, vi, attributeType_WithBestGain); //EXAMPLESvi subset list
+
+                //if Examplesvi is empty
+                if (Examplesvi.Count == 0)
                 {
-                    if (attribute.Attribute_Value.Equals("win") || attribute.Attribute_Value.Equals("yes")) { return false; }   //TODO: FIX THIS. Find a way to realize outputs as true/false (Get outputType values?)
+                    //Below this new branch add a leaf node with label = most common value of Target_attribute in Examples
+                    List<string> possible_TargetAttribute_Types = Program.GetPossibleAttributeValues(Examples, TargetAttribute_Type);
+                    //taken from: https://stackoverflow.com/questions/355945/find-the-most-occurring-number-in-a-listint
+                    var most = possible_TargetAttribute_Types.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
+
+                    Root.Branches.Add(branch);
+                    drawer.handleBranches(Root);
+                    //TODO: This is broken
+
+                }
+                //Else below this new branch add the subtree
+                else
+                {
+                    
+                    Console.Write(attributeType_WithBestGain + "= " + vi + "->");
+                    //Console.WriteLine("End Point, removing: " + attributeType_WithBestGain);
+
+                    List<string> Attribute_TypesCopy = new List<string>(Attribute_Types);
+                    Attribute_TypesCopy.Remove(attributeType_WithBestGain);  //Remove A(attribute with best gain ) from the list
+
+                    drawer.GoDown();
+                    TreeNode subtree = ID3Alt(Examplesvi, TargetAttribute_Type, Attribute_TypesCopy);
+
+                    branch.ConnectionNode = subtree;
+                    Root.Branches.Add(branch);
+                    drawer.handleBranches(Root);
                 }
             }
-            return true;
+            drawer.GoUp();
+            return Root;
         }
 
+        private static bool checkForAllSameOutcome(List<TreeData> Examples, string TargetAttribute_Type, out string outcome)
+        {
+            bool allSame = !Examples.Select(item => item.OutComeValue)  //If all outcome values are the same in the given list, return true
+                      .Where(x => !string.IsNullOrEmpty(x))
+                      .Distinct()
+                      .Skip(1)
+                      .Any();
+
+            if (allSame)
+            {
+                outcome = Examples[0].OutComeValue;
+                return true;
+            }
+            else
+            {
+                outcome = null;
+                return false;
+            }
+        }
 
         /// <summary>
         /// Calculates Entrophy of a given system. Takes in positive outcome count and negative outcome count as parameters.
@@ -67,51 +138,77 @@ namespace Assignment1_MachineLearning
         /// <param name="positive"></param>
         /// <param name="negative"></param>
         /// <returns>Entrophy between 0 and 1</returns>
-        public static double CalculateEntropy(double positive, double negative)
+        public static double CalculateEntropy(double[] outcomeCounts)//(double positive, double negative)
         {
-            double total = positive + negative;
+            double total = 0;
+            foreach (double i in outcomeCounts)
+            {
+                total += i;
+            }
 
-            double valueA = -1 * (positive / total) * Math.Log(positive / total, 2);
-            double valueB = -1 * (negative / total) * Math.Log(negative / total, 2);
+            double outputValue = 0;
+            foreach (double i in outcomeCounts)
+            {
+                double val = -1 * (i / total) * Math.Log(i / total, 2);
 
-            //Error Check
-            if (double.IsNaN(valueA + valueB)) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Detected Nan value (infinite return from log) when calculating entropy. Possibly no failures for given value, returning 0" ); Console.ForegroundColor = ConsoleColor.Gray; return 0.0; }
+                if (double.IsNaN(val)) { val = 0.0; }
 
-            return valueA + valueB;
+                outputValue += val;
+            }
+
+            //NaN / absolute success check
+            if (double.IsNaN(outputValue))
+            {
+                return 0.0;
+            }
+            return outputValue;
         }
 
-        public static double CalculateGain(List<TreeData> dataList, string AttributeType)
+        public static double CalculateGain(List<TreeData> dataList, string AttributeType, string outcomeType)
         {
+            List<string> possibleOutcomeValues = new List<string>();
+            possibleOutcomeValues = Program.GetPossibleAttributeValues(dataList, outcomeType);
+
+            double[] outcomeCounts = new double[possibleOutcomeValues.Count];
+
+            for (int i = 0; i < possibleOutcomeValues.Count; i++)
+            {
+                outcomeCounts[i] = Program.CountAttributeValueOccurance(dataList, possibleOutcomeValues[i], outcomeType);
+            }
+
+            double Gains = CalculateEntropy(outcomeCounts);
             List<string> PossibleValues = Program.GetPossibleAttributeValues(dataList, AttributeType);
 
-            //TODO: Export into methods
-            double DataSetSuccessCount = 0;
-            double DataSetFailureCount = 0;
-
-            foreach (TreeData data in dataList)
+            foreach (string possibleValue in PossibleValues) //Possible value : A, B, C,... for stadium
             {
-                if (data.isSuccesful) { DataSetSuccessCount++; }
-                else { DataSetFailureCount++; }
-            }
+                List<TreeData> occurances =  Program.GetAttributeValueOccurances(dataList, possibleValue, AttributeType);
 
-            double Gains = CalculateEntropy(DataSetSuccessCount, DataSetFailureCount);   //TODO: Number of positive and negative occurance calculation
+                double[] occuranceOutcomeCounts = new double[possibleOutcomeValues.Count];
 
-            foreach (string possibleValue in PossibleValues)
-            {
-                double occurances = Program.CountAttributeValueOccurance(dataList, possibleValue, AttributeType);
+                foreach (TreeData data in occurances)   //For every treedata object where possiblevalue exists (for every treedata where A is for stadium)
+                {
+                    for (int i = 0; i < possibleOutcomeValues.Count; i++)
+                    {
+                        if (data.OutComeValue.Equals(possibleOutcomeValues[i]))
+                        {
+                            occuranceOutcomeCounts[i]++;
+                            break;
+                        }
+                    }
+                }
 
-                //Substract the (number of times this value occured / all data count) * (entropy of the current value of the given type (Wind: Weak, Strong, Mild...))
-                double GainForPossibleValue = (occurances / dataList.Count) * CalculateEntropy(Program.CountSuccesesByAttributeValue(dataList, possibleValue, AttributeType), Program.CountFailuresByAttributeValue(dataList, possibleValue, AttributeType));
+                
+                double entropyValue = CalculateEntropy(occuranceOutcomeCounts);
+                double GainForPossibleValue = (Convert.ToDouble(occurances.Count) / Convert.ToDouble(dataList.Count)) * entropyValue;
                 Gains -= GainForPossibleValue;
 
-                Console.WriteLine("Entropy Coefficent for: " + possibleValue + " " + AttributeType + " " + GainForPossibleValue);
-
             }
 
+            //Console.WriteLine("Gain for " + AttributeType +" : " + Gains);
             return Gains;
         }
 
-        
+
 
     }
 }

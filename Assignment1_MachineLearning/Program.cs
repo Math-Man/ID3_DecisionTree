@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
+//TODO: NON BINARY OUTCOMES, USE OUTCOMETYPE INSTEAD OF ISSUCCESFUL
 
 namespace Assignment1_MachineLearning
 {
@@ -14,12 +15,22 @@ namespace Assignment1_MachineLearning
         {
             //TODO: Take data from console about outcomes and success/fail keywords
             List<TreeData> data;
-            data = ExtractData(
-                @"c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\Datasets\dataset1.txt",
-                "playtennis",
-                "yes",
-                "no");
+            List<string> possibleTypes;
 
+            string outcomeType = "Game";
+            string outcomeSuccessValue = "win";
+
+
+
+
+            data = ExtractData(
+                @"c:\users\mathman\documents\visual studio 2015\Projects\Assignment1_MachineLearning\Assignment1_MachineLearning\Datasets\dataset3.txt",
+                outcomeType,
+                outcomeSuccessValue,
+                out possibleTypes);
+
+            possibleTypes.Remove(outcomeType);
+            /*
             Console.WriteLine(data[0].AttributesList[0].Attribute_Type + " " + data[0].AttributesList[0].Attribute_Value);
 
             List<string> distinctList =  GetPossibleAttributeValues(data, "outlook");
@@ -33,6 +44,14 @@ namespace Assignment1_MachineLearning
             Console.WriteLine(DecisionTree.CalculateEntropy(CountSuccesesByAttributeValue(data, "sunny", "outlook"), CountFailuresByAttributeValue(data, "sunny", "outlook")));
 
             Console.WriteLine("Gain of outlook: " + DecisionTree.CalculateGain(data, "outlook"));
+            */
+
+            DecisionTree Tree = new DecisionTree();
+            Console.WriteLine("BRACE YOURSELVES");
+            DecisionTree.ID3Alt(data, outcomeType, possibleTypes);
+
+            
+
 
             Console.ReadKey();
         }
@@ -45,13 +64,13 @@ namespace Assignment1_MachineLearning
         /// <param name="succesfullOutcomeName">Outcome type's value upon succesful result (yes, win etc.)</param>
         /// <param name="failedOutcomeName">Outcome type's value upon failed result (no, loose)</param>
         /// <returns></returns>
-        public static List<TreeData> ExtractData(string FileName, string outcomeTypeStringName, string succesfullOutcomeName, string failedOutcomeName)
+        public static List<TreeData> ExtractData(string FileName, string outcomeTypeStringName, string succesfullOutcomeName, out List<string> possibleTypes)
         {
             List<TreeData> output = new List<TreeData>();
 
             StreamReader reader = new StreamReader(FileName);
             string line = "";
-            List<string> possibleTypes = new List<string>();
+            possibleTypes = new List<string>();
 
             while ((line = reader.ReadLine()) != null)
             {
@@ -74,7 +93,7 @@ namespace Assignment1_MachineLearning
                         TreeAttribute attribute = new TreeAttribute(words[i], possibleTypes[i]);
                         attList.Add(attribute);
                     }
-                    TreeData data = new TreeData(attList, outcomeTypeStringName, succesfullOutcomeName, failedOutcomeName);
+                    TreeData data = new TreeData(attList, outcomeTypeStringName, succesfullOutcomeName);
                     output.Add(data);
                 }
             }

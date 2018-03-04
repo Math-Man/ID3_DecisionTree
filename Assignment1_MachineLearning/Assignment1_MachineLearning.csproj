@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,11 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DecisionTree.cs" />
-    <Compile Include="NodeBranch.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeAttribute.cs" />
+    <Compile Include="TreeBranch.cs" />
     <Compile Include="TreeData.cs" />
+    <Compile Include="TreeDrawer.cs" />
     <Compile Include="TreeNode.cs" />
   </ItemGroup>
   <ItemGroup>

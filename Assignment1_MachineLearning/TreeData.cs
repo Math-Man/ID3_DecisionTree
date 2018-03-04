@@ -10,17 +10,20 @@ namespace Assignment1_MachineLearning
     class TreeData
     {
         public List<TreeAttribute> AttributesList { get; set; }
-        public bool isSuccesful { get; }
+        public bool isSuccesful { get; set; }
+        public string OutComeValue { get; set; }
 
-        public TreeData(List<TreeAttribute> attributes, string outcomeAttributeType, string SuccessKeyWord, string FailureKeyWord)
+        public TreeData(List<TreeAttribute> attributes, string outcomeAttributeType, string SuccessKeyWord)
         {
             //TODO: Add error
             AttributesList = attributes;
 
+            this.OutComeValue = GetAttributeByType(outcomeAttributeType).Attribute_Value;
+
             //Determine if this data is succesful
             if (GetAttributeByType(outcomeAttributeType).Attribute_Value.Equals(SuccessKeyWord)) { isSuccesful = true; }
-            else if (GetAttributeByType(outcomeAttributeType).Attribute_Value.Equals(FailureKeyWord)) { isSuccesful = false; }
-            else { Console.ForegroundColor = ConsoleColor.Red;  Console.WriteLine("Somethings broken"); Console.ForegroundColor = ConsoleColor.White; }//Its broken Error message
+            else { isSuccesful = false; } // (GetAttributeByType(outcomeAttributeType).Attribute_Value.Equals(FailureKeyWord)) { isSuccesful = false; }
+            //else { Console.ForegroundColor = ConsoleColor.Red;  Console.WriteLine("Somethings broken"); Console.ForegroundColor = ConsoleColor.Gray; }//Its broken Error message
         }
 
         /// <summary>
