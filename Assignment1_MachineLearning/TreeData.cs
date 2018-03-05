@@ -9,13 +9,21 @@ namespace Assignment1_MachineLearning
   
     class TreeData
     {
+        /// <summary>
+        /// List of attributes this data contains (Contains 1 attribute for each datatype(a row in the given dataset))
+        /// </summary>
         public List<TreeAttribute> AttributesList { get; set; }
+        /// <summary>
+        /// Is this treedata outcome succesful
+        /// </summary>
         public bool isSuccesful { get; set; }
+        /// <summary>
+        /// Value of the outcome
+        /// </summary>
         public string OutComeValue { get; set; }
 
         public TreeData(List<TreeAttribute> attributes, string outcomeAttributeType, string SuccessKeyWord)
         {
-            //TODO: Add error
             AttributesList = attributes;
 
             this.OutComeValue = GetAttributeByType(outcomeAttributeType).Attribute_Value;

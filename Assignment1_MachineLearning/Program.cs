@@ -5,7 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-//TODO: NON BINARY OUTCOMES, USE OUTCOMETYPE INSTEAD OF ISSUCCESFUL
+/**
+ * Goktug Kayacan 
+ * ID3 - Decision Tree implementation.
+ * Capable of handling non-binary outcomes.  
+ */
 
 namespace Assignment1_MachineLearning
 {
@@ -15,7 +19,6 @@ namespace Assignment1_MachineLearning
         {
             Start();
         }
-
 
         public static void Start()
         {
@@ -151,8 +154,6 @@ namespace Assignment1_MachineLearning
             int count = ((from temp in ValuesList where temp.Equals(attributeValue) select temp).Count());
             return count;
         }
-
-        //TODO: Move the next two methods into a class, make them non-static
 
         public static double CountFailuresByAttributeValue(List<TreeData> dataList, string attributeValue, string attributeType)
         {

@@ -8,7 +8,11 @@ namespace Assignment1_MachineLearning
 {
     class TreeBranch
     {
+
         public string label { get; set; }
+        /// <summary>
+        /// Node this branch is connected to
+        /// </summary>
         public TreeNode ConnectionNode { get; set; }
         public bool drawn { get; set; }
 

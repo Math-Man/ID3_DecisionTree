@@ -12,9 +12,18 @@ namespace Assignment1_MachineLearning
         /// Used to show the status of a node, not used in algorithms
         /// </summary>
         public string label { get; set; }
+        /// <summary>
+        /// Attribute type this node uses as rule
+        /// </summary>
         public string Decision_AttributeType { get; set; }
+        /// <summary>
+        /// Branches coming out of this node
+        /// </summary>
         public List<TreeBranch> Branches { get; set; }
         public bool isLeaf { get; set; }
+        /// <summary>
+        /// Gain of the attribute type on this node
+        /// </summary>
         public double StaticGain { get; set; }
 
         public TreeNode(string label)

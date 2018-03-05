@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Assignment1_MachineLearning
 {
+    /// <summary>
+    /// Attribute_Type:Attribute_Value pair
+    /// </summary>
     class TreeAttribute
     {
 

@@ -8,7 +8,6 @@ namespace Assignment1_MachineLearning
 {
     class DecisionTree
     {
-
         public static TreeDrawer drawer { get; set; }
 
         public DecisionTree()
@@ -49,6 +48,7 @@ namespace Assignment1_MachineLearning
 
                 //taken from: https://stackoverflow.com/questions/355945/find-the-most-occurring-number-in-a-listint
                 var most = possible_TargetAttribute_Types.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
+
                 Root.isLeaf = true;
                 Root.Decision_AttributeType = TargetAttribute_Type;
                 Root.label = most;
@@ -128,6 +128,13 @@ namespace Assignment1_MachineLearning
             
         }
 
+        /// <summary>
+        /// Method to check if all the given data has the same outcome value
+        /// </summary>
+        /// <param name="Examples"></param>
+        /// <param name="TargetAttribute_Type"></param>
+        /// <param name="outcome"></param>
+        /// <returns></returns>
         private static bool checkForAllSameOutcome(List<TreeData> Examples, string TargetAttribute_Type, out string outcome)
         {
             bool allSame = !Examples.Select(item => item.OutComeValue)  //If all outcome values are the same in the given list, return true
@@ -180,6 +187,13 @@ namespace Assignment1_MachineLearning
             return outputValue;
         }
 
+        /// <summary>
+        /// Calculates gain of the attribute type in the given dataset
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="AttributeType"></param>
+        /// <param name="outcomeType"></param>
+        /// <returns></returns>
         public static double CalculateGain(List<TreeData> dataList, string AttributeType, string outcomeType)
         {
             List<string> possibleOutcomeValues = new List<string>();
@@ -212,12 +226,9 @@ namespace Assignment1_MachineLearning
                         }
                     }
                 }
-
-                
                 double entropyValue = CalculateEntropy(occuranceOutcomeCounts);
                 double GainForPossibleValue = (Convert.ToDouble(occurances.Count) / Convert.ToDouble(dataList.Count)) * entropyValue;
                 Gains -= GainForPossibleValue;
-
             }
 
             //Console.WriteLine("Gain for " + AttributeType +" : " + Gains);

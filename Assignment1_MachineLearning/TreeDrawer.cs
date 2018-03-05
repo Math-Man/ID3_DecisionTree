@@ -28,8 +28,11 @@ namespace Assignment1_MachineLearning
 
             nodeCount = new int[99999];
             currentDepth = 1;
-            image = new Bitmap(2000, 1500);
+            image = new Bitmap(2000, 2000);
             g = Graphics.FromImage(image);
+
+            //Paint background black for better readablity
+            g.FillRectangle(Brushes.Black, 0, 0, 2000, 2000);
         }
 
         public void Save()
@@ -52,7 +55,7 @@ namespace Assignment1_MachineLearning
             PointF drawPoint = new PointF(HorizontalPadding + (NodesOnThisDepth * DistanceMult) + NodesOnThisDepth * 20, 100 + currentDepth * DistanceMult);
 
             // Draw string to screen.
-            g.DrawString(node.label + "\nGain: " + (node.StaticGain).ToString("#0.00"), drawFont, drawBrush, drawPoint);
+            g.DrawString(node.label + "\nGain: " + (node.StaticGain).ToString("#0.000"), drawFont, drawBrush, drawPoint);
         }
 
         public void handleBranches(TreeNode node)
@@ -67,10 +70,8 @@ namespace Assignment1_MachineLearning
                 if (!branch.drawn)
                 {
                     PointF drawPoint = new PointF(
-                        ((((nodeCount[currentDepth + 1] * DistanceMult) + nodeCount[currentDepth + 1] * 45) + (NodesOnThisDepth * (DistanceMult)) + NodesOnThisDepth * 20) / 2) + 20 ,
+                        ((((nodeCount[currentDepth + 1] * DistanceMult) + nodeCount[currentDepth + 1] * 45) + (NodesOnThisDepth * (DistanceMult)) + NodesOnThisDepth * 20) / 2) + 20,
                         (((175 + (currentDepth + 1) * DistanceMult)) + (100 + currentDepth * DistanceMult)) / 2);
-
-                    
 
                     g.DrawLine(new Pen(Color.SlateGray, 3), HorizontalPadding / 4 + (NodesOnThisDepth * DistanceMult) + NodesOnThisDepth * 20, (100 + currentDepth * DistanceMult) + 75,
                         HorizontalPadding / 4 + (nodeCount[currentDepth + 1] * DistanceMult) + nodeCount[currentDepth + 1] * 20, 100 + (currentDepth + 1) * DistanceMult);
@@ -81,8 +82,6 @@ namespace Assignment1_MachineLearning
                 }
             }
         }
-
-
 
         public void GoDown()
         {
@@ -100,7 +99,7 @@ namespace Assignment1_MachineLearning
             SolidBrush drawBrush = new SolidBrush(Color.White);
 
             // Create point for upper-left corner of drawing.
-            PointF drawPoint = new PointF(50,50);
+            PointF drawPoint = new PointF(50, 50);
 
             // Draw string to screen.
             string conc = "";
@@ -109,7 +108,7 @@ namespace Assignment1_MachineLearning
                 conc += s + ", ";
             }
 
-            g.DrawString("Plot for: " + OutcomeType + "\nAttribute Types: " + conc,  drawFont, drawBrush, drawPoint);
+            g.DrawString("Plot for: " + OutcomeType + "\nAttribute Types: " + conc, drawFont, drawBrush, drawPoint);
             signed = true;
         }
 
