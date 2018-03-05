@@ -27,7 +27,9 @@ namespace Assignment1_MachineLearning
         public static TreeNode ID3Alt(List<TreeData> Examples, string TargetAttribute_Type, List<string> Attribute_Types, bool ExtraLogging)
         {
             TreeNode Root = new TreeNode("Unlabeled");
-            
+
+            if(!drawer.signed) drawer.Sign(TargetAttribute_Type, Attribute_Types);
+
             string typestring;
             if (checkForAllSameOutcome(Examples, TargetAttribute_Type, out typestring))
             {
@@ -78,8 +80,6 @@ namespace Assignment1_MachineLearning
             Root.StaticGain = bestGain;
             drawer.AddNode(Root);
             Root.Decision_AttributeType = attributeType_WithBestGain;
-
-            
 
             //For each possible value vi of attributeType_WithBestGain
             List<string> PossibleValues = Program.GetPossibleAttributeValues(Examples, attributeType_WithBestGain);

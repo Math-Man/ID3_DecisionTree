@@ -14,7 +14,6 @@ namespace Assignment1_MachineLearning
         static void Main(string[] args)
         {
             Start();
-            Console.ReadKey();
         }
 
 
@@ -34,7 +33,13 @@ namespace Assignment1_MachineLearning
                     options.Add(split[split.Length - 1]);
                 }
 
+                if (counter == 0) return;
+
+                Console.WriteLine(counter + ") Exit");
+
                 int decisionIndex = Int32.Parse(Console.ReadLine());
+                if (decisionIndex == counter) { return; }
+
                 while (decisionIndex > options.Count - 1 || decisionIndex < 0) { decisionIndex = Int32.Parse(Console.ReadLine()); }
 
                 Console.WriteLine("Enter name of the outcome (playtennis, Game etc..)");
@@ -182,7 +187,6 @@ namespace Assignment1_MachineLearning
             }
             return count;
         }
-
 
         /// <summary>
         /// Gets the data with given value of the given attribute type
